@@ -2,6 +2,5 @@ Flask
 pandas
 playwright
 asyncio
-smtplib
 email-validator
 python-dotenv
