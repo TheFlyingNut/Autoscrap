@@ -3,3 +3,4 @@ pandas
 playwright
 asyncio
 python-dotenv
+beautifulsoup4
