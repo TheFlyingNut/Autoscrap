@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Amazon Scraper | AutoScrap 🕷️</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styles/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1 class="title">AutoScrap 🕷️</h1>
+    <nav>
+      <a class="back-btn" href="/">⬅️ Back</a>
+    </nav>
+  </header>
+
+  <div id="loader">
+    <div class="spinner"></div>
+        <p>Scraping in progress... Please wait ⏳</p>
+  </div>
+
+  <main class="container">
+    <h2>Amazon Scraper</h2>
+    <p>
+      This Amazon scraper uses <strong>Playwright</strong> to emulate real browsing behavior on Amazon.in.
+      It scrolls through product listings, capturing:
+      <ul>
+        <li>Product Title</li>
+        <li>Price and Old Price (if available)</li>
+        <li>Rating & Prime Eligibility</li>
+        <li>ASIN & Direct URL</li>
+      </ul>
+      The Playwright engine ensures accurate extraction by handling lazy loading and dynamic DOM mutations on every scroll.
+      You can customize your search below, and the results are saved in CSV and visualized.
+    </p>
+
+    <form action="/run/amazon" method="POST" class="scraper-form" onsubmit="showLoader()">
+      <input class="input-field" type="text" name="keyword" placeholder="Search term (e.g. shirts)" />
+      <input class="input-field" type="number" name="pages" placeholder="Number of pages (e.g. 2)" />
+      <button type="submit" class="run-btn">🛒 Run Amazon Search</button>
+    </form>
+
+    <div class="action-buttons">
+      <button class="visualize-btn" onclick="renderAmazonChart()">📊 Visualize</button>
+      <a class="download-btn" href="/static/data/amazon_search.csv" download>📥 Download CSV</a>
+    </div>
+
+    <canvas id="amazonChart" width="800" height="400"></canvas>
+  </main>
+
+  <footer class="footer">
+    Made with 🧠 & ⚙️ by AutoScrap
+  </footer>
+
+  <script>
+
+    function showLoader() {
+        document.getElementById("loader").classList.add("active");
+    }
+
+    async function renderAmazonChart() {
+      const response = await fetch('/static/data/amazon_search.csv');
+      const text = await response.text();
+      const rows = text.trim().split('\n').slice(1);
+      const labels = [], prices = [];
+
+      for (let row of rows.slice(0, 10)) {
+        const cols = row.split(',');
+        labels.push(cols[4]?.slice(0, 30) + '...');
+        prices.push(parseInt(cols[5]?.replace(/[^0-9]/g, "")) || 0);
+      }
+
+      new Chart(document.getElementById('amazonChart'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Current Price',
+            data: prices,
+            backgroundColor: 'rgba(0, 150, 255, 0.5)',
+            borderColor: 'rgba(0, 150, 255, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            title: { display: true, text: 'Top 10 Products by Price' }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

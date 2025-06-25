@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>YouTube Scraper | AutoScrap 🕷️</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styles/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header">
+    <a class="back-btn" href="/">⬅️ Back</a>
+    <h1 class="title">AutoScrap 🕷️</h1>
+  </header>
+
+    <div id="loader" class="hidden">
+    <div class="spinner"></div>
+        <p>Scraping in progress... Please wait ⏳</p>
+  </div>
+
+  <main class="container">
+    <h2 class="section-title">YouTube Video Metadata Scraper</h2>
+    <p class="description">
+      Scrapes YouTube search results using Playwright with headless Chromium. Extracts the first <strong>N</strong> video results for any given search query. It fetches metadata like title, channel name, views, upload date, and direct video URLs. Fully automated and browserless for speed and stealth.
+      <br><br>
+      Built for rapid market research, SEO analysis, and content discovery. Supports dynamic scrolling and adaptive selectors to bypass lazy-loaded content.
+    </p>
+
+    <form id="youtube-form" method="POST" action="/run/youtube" class="form-container" onsubmit="showLoader()">
+      <label for="keyword">Search Term</label>
+      <input class="input-field" type="text" id="keyword" name="keyword" placeholder="e.g. AI Tutorial" />
+
+      <label for="count">Result Count</label>
+      <input class="input-field" type="number" id="count" name="count" placeholder="e.g. 50" />
+
+      <button class="run-btn" type="submit">Run Scraper</button>
+    </form>
+
+    <div id="chart-container" class="chart-container hidden">
+      <canvas id="youtubeChart"></canvas>
+    </div>
+
+    <div class="download-section">
+      <button class="visualize-btn" onclick="loadYouTubeChart()">📊 Visualize</button>
+      <a class="download-btn" href="/static/data/youtube_results.csv" download>📥 Download Results CSV</a>
+    </div>
+    <br><br>
+  </main>
+
+  <footer class="footer">
+    <p>Made with ❤️ by AutoScrap · Playwright Powered · Flask Served</p>
+  </footer>
+
+  <script>
+    function showLoader() {
+        document.getElementById("loader").classList.remove("hidden");
+    }
+    async function loadYouTubeChart() {
+      const response = await fetch("/static/data/youtube_results.csv");
+      const data = await response.text();
+      const rows = data.split("\n").slice(1, 11);
+      const labels = [], views = [];
+
+      rows.forEach(row => {
+        const cols = row.split(",");
+        labels.push(cols[0]?.slice(0, 20) + "...");
+        views.push(parseInt(cols[2]?.replace(/[^0-9]/g, '')) || 0);
+      });
+
+      document.getElementById("chart-container").classList.remove("hidden");
+
+      new Chart(document.getElementById("youtubeChart"), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Views',
+            data: views,
+            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+            borderRadius: 5,
+            borderColor: '#ff4d6d',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 500000
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoScrap Dashboard</title>
+  <link rel="stylesheet" href="/static/styles/style.css">
+</head>
+<body>
+  <header>
+    <h1>🕷️ AutoScrap Dashboard</h1>
+    <p>Your all-in-one scraping hub for YouTube, Reddit, Amazon & Flipkart</p>
+  </header>
+
+  <main>
+    <section class="card-grid">
+      <a href="/youtube" class="scraper-card">
+        <h2>YouTube Scraper</h2>
+        <span class="tech">Playwright + Flask</span>
+        <p>Scrape YouTube video metadata from search results like views, channels, and upload time.</p>
+      </a>
+
+      <a href="/reddit" class="scraper-card">
+        <h2>Reddit Scraper</h2>
+        <span class="tech">Playwright + Flask</span>
+        <p>Grab post details from any subreddit. Sort by time, scrape titles, authors, links & more.</p>
+      </a>
+
+      <a href="/amazon" class="scraper-card">
+        <h2>Amazon Scraper</h2>
+        <span class="tech">Playwright + Flask</span>
+        <p>Run both Amazon search & product detail scrapers. Great for price & review tracking.</p>
+      </a>
+
+      <a href="/flipkart" class="scraper-card">
+        <h2>Flipkart Tracker</h2>
+        <span class="tech">Playwright + Pandas</span>
+        <p>Track laptop prices, get alerts for price drops, and log product history over time.</p>
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    <p>⚡ Built by Kartik | Flask + Playwright + Bs4  + Jinja2</p>
+  </footer>
+
+  <script src="/static/scripts/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reddit Scraper | AutoScrap 🕷️</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styles/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .scraper-header {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #FF5700;
+      text-shadow: 1px 1px 3px #00000055;
+    }
+    .input-group {
+      margin-top: 2rem;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #aaa;
+      width: 100%;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    button {
+      padding: 0.7rem 1.2rem;
+      background-color: #FF4500;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #cc3700;
+    }
+    canvas {
+      max-width: 100%;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="main-header">
+    <h1 class="glow">🕷️ AutoScrap</h1>
+  </header><br><br>
+  <div class="action-buttons">
+    <a class="back-btn" href="/">⬅️ Back</a>
+  </div>
+    <div id="loader" class="hidden">
+    <div class="spinner"></div>
+        <p>Scraping in progress... Please wait ⏳</p>
+  </div>
+  <main class="container">
+    <h2 class="scraper-header">Reddit Post Scraper</h2>
+    <p>
+      This tool scrapes the hottest, most recent, and most relevant posts from any subreddit using <strong>Playwright</strong>.
+      It analyzes post metadata including title, upvotes, comments, and post time, and intelligently filters content
+      for sentiment, keyword density, and user engagement signals. It’s trained to bypass Reddit’s dynamic content loading
+      with asynchronous scrolling and can parse posts that require lazy-loaded interactions.
+    </p>
+    <p>
+      Data is parsed using advanced XPath and Playwright locators, filtered and sorted by timestamp and relevance,
+      and stored in CSVs dynamically named based on subreddit and scrape time. You can then visualize post frequency
+      and upvote distribution through live charts.
+    </p>
+
+    <form action="/run/reddit" method="POST" class="scraper-form" onsubmit="showLoader()">
+      <input class="input-field" type="text" name="subreddit" placeholder="Subreddit name (e.g. Python)" />
+      <input class="input-field" type="number" name="count" placeholder="Number of posts" />
+      <br><br>
+      <button type="submit" class="run-btn">🚀 Run Scraper</button>
+    </form>
+    <br>
+    <div class="action-buttons">
+        <button class="visualize-btn" onclick="renderChart()">📊 Visualize</button>
+        <a class="download-btn" href="/static/data/reddit_results.csv" download>📥 Download CSV</a>
+    </div>
+
+    <canvas id="chart" width='800' height="400"></canvas>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 AutoScrap Inc. All Data Used Responsibly.</p>
+  </footer>
+
+  <script>
+    function showLoader() {
+        document.getElementById("loader").classList.remove("hidden");
+    }
+    async function loadChart() {
+      const response = await fetch('/static/data/reddit_results.csv');
+      const data = await response.text();
+
+      const rows = data.split('\n').slice(1);
+      const labels = [];
+      const upvotes = [];
+
+      rows.forEach(row => {
+        const cols = row.split(',');
+        if (cols.length > 3) {
+          labels.push(cols[0].slice(0, 20) + '...'); // Short title
+          upvotes.push(parseInt(cols[2] || 0)); // Assuming upvotes is 3rd column
+        }
+      });
+
+      const ctx = document.getElementById('chart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels.slice(0, 10),
+          datasets: [{
+            label: 'Upvotes',
+            data: upvotes.slice(0, 10),
+            backgroundColor: 'rgba(255, 69, 0, 0.7)',
+            borderColor: 'rgba(255, 69, 0, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flipkart Price Tracker | AutoScrap 🕷️</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Styles/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header">
+    <a class="back-btn" href="/">⬅️ Back</a>
+    <h1 class="title">AutoScrap 🕷️</h1>
+  </header>
+
+    <div id="loader" class="hidden">
+    <div class="spinner"></div>
+        <p>Scraping in progress... Please wait ⏳</p>
+  </div>
+
+  <main class="container">
+    <h2 class="section-title">Flipkart Price Tracker</h2>
+    <p class="description">
+      This scraper monitors Flipkart listings in real-time and stores product metadata including <strong>title, price, old price, rating, number of reviews, and URL</strong>.
+      <br><br>
+      It compares historical prices from previous runs and marks products that have had a <strong>price drop</strong>. Results are stored in a local CSV, and on subsequent runs, the scraper intelligently flags discounted items and logs them with timestamps.
+      <br><br>
+      <span style="color:#88f;">Bonus:</span> You can <strong>schedule it to run daily</strong> and get <strong>alerts for drops greater than 10%</strong>. Visualize trends right here with a slick graph powered by Chart.js.
+    </p>
+
+    <form id="flipkart-form" method="POST" action="/run/flipkart" class="form-container" onsubmit="showLoader()">
+      <label for="keyword">Search Term</label>
+      <input class="input-field" type="text" id="keyword" name="keyword" placeholder="e.g. Laptop" />
+
+      <div class="toggle-container">
+        <label for="schedule">Auto-run Daily?</label>
+        <input type="checkbox" name="schedule" id="schedule" />
+      </div>
+
+      <button class="action-buttons" type="submit">Run Tracker</button>
+    </form>
+
+    <div id="chart-container" class="chart-container hidden">
+      <canvas id="flipkartChart"></canvas>
+    </div>
+
+    <div class="download-section">
+      <button class="visualize-btn" onclick="loadFlipkartChart()">📊 Visualize</button>
+      <a class="download-btn" href="/static/data/flipkart_prices.csv" download>📥 Download Prices CSV</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Made with ❤️ by AutoScrap · Price-aware · Mail-enabled · Fully headless</p>
+  </footer>
+
+  <script>
+    function showLoader() {
+        document.getElementById("loader").classList.remove("hidden");
+    }
+    async function loadFlipkartChart() {
+      const response = await fetch("/static/data/flipkart_prices.csv");
+      const data = await response.text();
+      const rows = data.split("\n").slice(1, 11);
+      const labels = [], prices = [], drops = [];
+
+      rows.forEach(row => {
+        const cols = row.split(",");
+        if (cols.length >= 3) {
+          labels.push(cols[0]?.slice(0, 25) + "...");
+          prices.push(parseInt(cols[1]?.replace(/\D/g, "")) || 0);
+          drops.push(cols[7]?.includes("Yes") ? "🟢" : "🔵");
+        }
+      });
+
+      document.getElementById("chart-container").classList.remove("hidden");
+
+      new Chart(document.getElementById("flipkartChart"), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Current Price (₹)',
+            data: prices,
+            backgroundColor: drops.map(d => d === "🟢" ? "rgba(50,255,80,0.7)" : "rgba(66,133,244,0.6)"),
+            borderRadius: 5,
+            borderWidth: 1,
+            borderColor: drops.map(d => d === "🟢" ? "#00ff90" : "#3c8bff")
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
