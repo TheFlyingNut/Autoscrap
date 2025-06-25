@@ -135,13 +135,13 @@ def compare_with_old_data(new_data):
 def send_email_alert(product):
     subject = "🔔 Flipkart Price Drop Alert!"
     body = f"""
-🔥 <b>{product['Title']}</b><br>
-Old Price: ₹{product['Old Price']}<br>
-New Price: ₹{product['Current Price']}<br>
-Rating: {product['Rating']} ⭐<br>
-Reviews: {product['Reviews']}<br>
-<br>
-<a href="{product['URL']}">🔗 View Product</a>
+        🔥 <b>{product['Title']}</b><br>
+        Old Price: ₹{product['Old Price']}<br>
+        New Price: ₹{product['Current Price']}<br>
+        Rating: {product['Rating']} ⭐<br>
+        Reviews: {product['Reviews']}<br>
+        <br>
+        <a href="{product['URL']}">🔗 View Product</a>
     """
 
     msg = MIMEMultipart()
