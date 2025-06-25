@@ -2,5 +2,4 @@ Flask
 pandas
 playwright
 asyncio
-email-validator
 python-dotenv
