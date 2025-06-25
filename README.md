@@ -132,36 +132,13 @@ Open Task Scheduler (Windows)
 
 Set to run scheduler.py daily
 
-📁 Project Structure
-
-AutoScrap/
-├── app.py                    
-├── scheduler.py             
-├── Scrapers/                
-│   ├── amazon_search.py
-│   ├── amazon_search_product.py
-│   ├── youtube_search.py
-│   ├── redditscraper.py
-│   └── flipkart_tracker.py
-├── templates/
-│   ├── index.html
-│   ├── reddit.html
-│   ├── amazon.html
-│   ├── youtube.html
-│   └── flipkart.html
-├── static/
-    ├── data/
-    ├── styles/
-      └── styles.css
-
-
 python-dotenv
 
 Also run: playwright install after installing requirements
 
 🎉 Credits
 
-Built with sleepless nights, Red Bulls, and aggressive debugging by Kartik 🤝 ChatGPT (aka his spider brother).
+Built with Red Bulls, and aggressive debugging by Kartik.
 
 🚨 Disclaimer
 
